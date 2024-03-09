@@ -1,15 +1,14 @@
-package ru.itmentor.spring.boot_security.demo.configs.service;
+package ru.itmentor.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.itmentor.spring.boot_security.demo.configs.DAO.UserDAO;
+import ru.itmentor.spring.boot_security.demo.DAO.UserDAO;
 
-import ru.itmentor.spring.boot_security.demo.configs.models.Role;
-import ru.itmentor.spring.boot_security.demo.configs.models.User;
+import ru.itmentor.spring.boot_security.demo.models.Role;
+import ru.itmentor.spring.boot_security.demo.models.User;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -20,32 +19,23 @@ public class UserServiceImpl implements UserService {
     private UserDAO userDao;
     private final PasswordEncoder passwordEncoder;
 
-
-
     @Autowired
     public UserServiceImpl(UserDAO userDao, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
     }
 
-
     @Override
     @Transactional  // Spring берет ответственность за открытие\закрытие транзакций
     public List<User> getAllUsers() {
         return userDao.getAllUsers();
     }
-
     @Override
     @Transactional
-    public void saveUser(User user) {
+    public void saveUser(User user, String[] role) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-
-        Role userRole = new Role("ROLE_USER"); // Предполагается, что у вас есть конструктор Role, который принимает имя роли
-        user.setRoles(Collections.singleton(userRole));
-
-        userDao.saveUser(user);
-
+        userDao.saveUser(user, role);
     }
 
     @Override
@@ -62,11 +52,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(User user) {
-        userDao.updateUser(user);
+    public void updateUser(User user, String[] role) {
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+        userDao.updateUser(user, role);
     }
-
-
     @Override
     public List<Role> getAllRoles() {
         return userDao.getAllRoles();

@@ -1,6 +1,6 @@
-package ru.itmentor.spring.boot_security.demo.configs.models;
+package ru.itmentor.spring.boot_security.demo.models;
+
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -29,7 +29,7 @@ public class User implements UserDetails {
     @Column(name = "salary")
     private int salary;
 
-    @ManyToMany(fetch =  FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -50,7 +50,9 @@ public class User implements UserDetails {
         this.salary = salary;
     }
 
-
+    public void getRole(String role) {
+        roles.add(new Role(role));
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
